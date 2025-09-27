@@ -1,0 +1,23 @@
+#router-wrapper {
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+  padding: 10px;
+  background: #282c34;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+}
+nav a:hover {
+  text-decoration: underline;
+}

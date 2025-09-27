@@ -1,0 +1,1 @@
+{"ast":null,"code":"function mutationOptions(options) {\n  return options;\n}\nexport { mutationOptions };\n//# sourceMappingURL=mutation-options.mjs.map","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}
