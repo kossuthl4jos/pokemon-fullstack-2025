@@ -1,1 +1,0 @@
-{"ast":null,"code":"function queryOptions(options) {\n  return options;\n}\nexport { queryOptions };\n//# sourceMappingURL=query-options.mjs.map","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

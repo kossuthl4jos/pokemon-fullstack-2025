@@ -1,1 +1,0 @@
-{"ast":null,"code":"import \"zone.js\";\nbootstrapApplication(AppComponent, {\n  providers: [provideRouter(appRoutes), importProvidersFrom(HttpClientModule)]\n}).catch(err => console.error(err));","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}
