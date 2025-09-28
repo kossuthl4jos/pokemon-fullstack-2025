@@ -4,6 +4,7 @@ import {
   ElementRef,
   inject,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from "@angular/core";
 import { Router } from "@angular/router";
@@ -30,11 +31,12 @@ import { Pokemon, PokemonService } from "../../services/pokemon.service";
       } } } @if (query.hasNextPage()) {
       <li id="loading" #anchor>...loading more items...</li>
       }
-    </ul>`,
+    </ul>
+    <button id="toTheTopButton" (click)="toTheTop()">Go Up</button>`,
   imports: [TitleCasePipe],
   styleUrls: ["./pokemon-list.component.css"],
 })
-export class PokemonListComponent implements OnDestroy {
+export class PokemonListComponent implements OnInit, OnDestroy {
   pokemonService = inject(PokemonService);
   router = inject(Router);
   queryClient = inject(QueryClient);
@@ -96,6 +98,13 @@ export class PokemonListComponent implements OnDestroy {
     }
   }
 
+  ngOnInit(): void {
+    window.onscroll = () => {
+      const toTheTopButton = document.getElementById("toTheTopButton");
+      return this.scrollFunction(toTheTopButton);
+    };
+  }
+
   ngOnDestroy() {
     this.stopObserving();
   }
@@ -112,5 +121,22 @@ export class PokemonListComponent implements OnDestroy {
   viewDetails(pokemon: Pokemon) {
     const id = pokemon.url.split("/").filter(Boolean).pop();
     this.router.navigate(["/pokemon", id]);
+  }
+
+  scrollFunction(button: HTMLElement | null) {
+    if (!button) return;
+    if (window.scrollY > 200) {
+      button.style.display = "block";
+    } else {
+      button.style.display = "none";
+    }
+  }
+
+  toTheTop() {
+    console.log("toTheTop: ", document.documentElement.scrollTop);
+    if (document.documentElement.scrollTop) {
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
+    document.body.scrollTop = 0; // For Safari
   }
 }

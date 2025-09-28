@@ -13,3 +13,27 @@
 .pokemon-list li:hover {
   background: #d1e7ff;
 }
+
+#toTheTopButton {
+  display: none; /* Hidden by default */
+  --offset: 50px;
+
+  position: sticky;
+  bottom: 20px;
+  margin-right: 10px;
+  place-self: end;
+  margin-top: calc(100vh + var(--offset));
+
+  /* visual styling */
+  text-decoration: none;
+  padding: 10px;
+  font-family: sans-serif;
+  color: #fff;
+  background: #000;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+#toTheTopButton:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
