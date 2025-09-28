@@ -2,7 +2,8 @@ import { TitleCasePipe } from '@angular/common';
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { injectInfiniteQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { Pokemon, PokemonService } from '../../services/pokemon.service';
+import { PokemonService } from 'src/app/services/pokemon.service';
+import { Pokemon } from 'src/app/services/schemas';
 
 @Component({
     selector: 'app-pokemon-list',
@@ -16,7 +17,7 @@ import { Pokemon, PokemonService } from '../../services/pokemon.service';
             } @else if (query.isError()) {
             <span>Error: {{ query.error().message }}</span>
             } @else { @for (pokemon of filteredItems(); track pokemon.url) {
-            <li (click)="viewDetails(pokemon)">
+            <li (click)="viewDetails(pokemon.url)">
                 {{ pokemon.name | titlecase }}
             </li>
             } } @if (!this.searchText() && this.query.hasNextPage()) {
@@ -29,7 +30,7 @@ import { Pokemon, PokemonService } from '../../services/pokemon.service';
     styleUrls: ['./pokemon-list.component.css'],
 })
 export class PokemonListComponent implements OnInit, OnDestroy {
-    pokemonService = inject(PokemonService);
+    pokemonClient = inject(PokemonService);
     router = inject(Router);
     queryClient = inject(QueryClient);
 
@@ -50,12 +51,11 @@ export class PokemonListComponent implements OnInit, OnDestroy {
 
     query = injectInfiniteQuery(() => ({
         queryKey: ['pokemons'],
-        queryFn: async ({ pageParam }) => {
-            return await this.pokemonService.getPokemons(20, pageParam);
-        },
+        queryFn: async ({ pageParam }) => await this.pokemonClient.getPokemons(20, pageParam),
         getPreviousPageParam: () => null,
         initialPageParam: 0,
         getNextPageParam: lastPage => {
+            if (!lastPage.next) return undefined;
             const searchParams = new URL(lastPage.next).searchParams;
             return Number(searchParams.get('offset'));
         },
@@ -66,8 +66,6 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         const currentResults = this.query?.data()?.pages.flatMap(page => page.results) || [];
         return currentResults.filter(pokemon => pokemon.name.toLowerCase().includes(text));
     });
-
-    pokemons: Pokemon[] = [];
 
     private startObserving() {
         this.stopObserving();
@@ -118,8 +116,8 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         }
     }
 
-    viewDetails(pokemon: Pokemon) {
-        const id = pokemon.url.split('/').filter(Boolean).pop();
+    viewDetails(pokemonUrl: string) {
+        const id = pokemonUrl.split('/').filter(Boolean).pop();
         this.router.navigate(['/pokemon', id]);
     }
 
