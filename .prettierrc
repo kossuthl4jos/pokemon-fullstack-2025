@@ -7,7 +7,7 @@
     "bracketSpacing": true,
     "arrowParens": "avoid",
     "trailingComma": "es5",
-    "printWidth": 175,
+    "printWidth": 150,
     "overrides": [
         {
             "files": "*.json",

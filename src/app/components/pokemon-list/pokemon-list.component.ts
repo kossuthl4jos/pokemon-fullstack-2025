@@ -9,7 +9,7 @@ import { Pokemon } from 'src/app/services/schemas';
     selector: 'app-pokemon-list',
     standalone: true,
     template: `
-        <h2>Pokémon List</h2>
+        <h2>Pokémons List</h2>
         <input type="text" placeholder="Filter by name" [value]="searchText()" (input)="searchText.set($any($event.target).value)" />
         <ul class="pokemon-list">
             @if (query.isPending()) {
