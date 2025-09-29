@@ -1,9 +1,9 @@
-import { TitleCasePipe } from '@angular/common';
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { injectInfiniteQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { Pokemon } from 'src/app/services/schemas';
+import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
 
 @Component({
     selector: 'app-pokemon-list',
@@ -13,24 +13,22 @@ import { Pokemon } from 'src/app/services/schemas';
         <input type="text" placeholder="Filter by name" [value]="searchText()" (input)="searchText.set($any($event.target).value)" />
         <ul class="pokemon-list">
             @if (query.isPending()) {
-            <p>Loading...</p>
+            <p>Loading in list component...</p>
             } @else if (query.isError()) {
             <span>Error: {{ query.error().message }}</span>
-            } @else { @for (pokemon of filteredItems(); track pokemon.url) {
-            <li (click)="viewDetails(pokemon.url)">
-                {{ pokemon.name | titlecase }}
-            </li>
+            } @else { @for (pokemon of filteredItems(); track pokemon.id) {
+            <app-pokemon-card [pokemon]="pokemon" (click)="viewDetails(pokemon.id.toString())" />
             } } @if (!this.searchText() && this.query.hasNextPage()) {
             <li id="loading" #anchor>...loading more items...</li>
             }
         </ul>
         <button id="toTheTopButton" (click)="toTheTop()">Go Up</button>
     `,
-    imports: [TitleCasePipe],
+    imports: [PokemonCardComponent],
     styleUrls: ['./pokemon-list.component.css'],
 })
 export class PokemonListComponent implements OnInit, OnDestroy {
-    pokemonClient = inject(PokemonService);
+    pokemonService = inject(PokemonService);
     router = inject(Router);
     queryClient = inject(QueryClient);
 
@@ -51,8 +49,16 @@ export class PokemonListComponent implements OnInit, OnDestroy {
 
     query = injectInfiniteQuery(() => ({
         queryKey: ['pokemons'],
-        queryFn: async ({ pageParam }) => await this.pokemonClient.getPokemons(20, pageParam),
-        getPreviousPageParam: () => null,
+        queryFn: async ({ pageParam }) => {
+            const pageData = await this.pokemonService.getPokemons(20, pageParam);
+            const detailedResults = await Promise.all(
+                pageData.results.map(async pokemon => {
+                    const detailedData = await fetch(pokemon.url).then(res => res.json()); // replace it with the query
+                    return detailedData;
+                })
+            );
+            return { ...pageData, results: detailedResults };
+        },
         initialPageParam: 0,
         getNextPageParam: lastPage => {
             if (!lastPage.next) return undefined;
@@ -116,9 +122,8 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         }
     }
 
-    viewDetails(pokemonUrl: string) {
-        const id = pokemonUrl.split('/').filter(Boolean).pop();
-        this.router.navigate(['/pokemon', id]);
+    viewDetails(pokemonId: string) {
+        this.router.navigate(['/pokemon', pokemonId]);
     }
 
     scrollFunction(button: HTMLElement | null) {

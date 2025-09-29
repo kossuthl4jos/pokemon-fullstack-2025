@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, Signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map } from 'rxjs';
 import { Pokemon, PokemonsResponse } from './schemas';
@@ -21,9 +21,10 @@ export class PokemonService {
         );
     }
 
-    getPokemonById = (pokemonId: Signal<string>) =>
+    getPokemonById = (pokemonId: string) =>
         injectQuery(() => ({
-            queryKey: ['pokemon', pokemonId()],
-            queryFn: () => lastValueFrom(this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${pokemonId()}`).pipe(map(response => Pokemon.parse(response)))),
+            queryKey: ['pokemon', pokemonId],
+            queryFn: () =>
+                lastValueFrom(this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${pokemonId}`).pipe(map(response => Pokemon.parse(response)))),
         }));
 }

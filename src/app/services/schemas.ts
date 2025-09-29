@@ -32,6 +32,7 @@ export const Pokemon = z.object({
     moves: z.array(Move),
     stats: z.array(BaseStat),
     sprites: z.object({
+        front_default: z.url().nullable(),
         other: z.object({
             'official-artwork': z.object({
                 front_default: z.string(),

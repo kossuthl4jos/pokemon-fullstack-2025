@@ -47,5 +47,5 @@ export class PokemonComponent {
         { initialValue: '' }
     );
 
-    pokemon = this.pokemonService.getPokemonById(this.pokemonId);
+    pokemon = this.pokemonService.getPokemonById(this.pokemonId());
 }
