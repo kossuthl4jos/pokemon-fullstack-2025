@@ -11,7 +11,7 @@ import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
     template: `
         <h2>Pokémons List</h2>
         <input type="text" placeholder="Filter by name" [value]="searchText()" (input)="searchText.set($any($event.target).value)" />
-        <ul class="pokemon-list">
+        <div class="pokemon-list">
             @if (query.isPending()) {
             <p>Loading in list component...</p>
             } @else if (query.isError()) {
@@ -19,9 +19,9 @@ import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
             } @else { @for (pokemon of filteredItems(); track pokemon.id) {
             <app-pokemon-card [pokemon]="pokemon" (click)="viewDetails(pokemon.id.toString())" />
             } } @if (!this.searchText() && this.query.hasNextPage()) {
-            <li id="loading" #anchor>...loading more items...</li>
+            <div id="loading" #anchor>...loading more items...</div>
             }
-        </ul>
+        </div>
         <button id="toTheTopButton" (click)="toTheTop()">Go Up</button>
     `,
     imports: [PokemonCardComponent],
