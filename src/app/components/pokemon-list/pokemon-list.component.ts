@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { injectInfiniteQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { QueryClient } from '@tanstack/angular-query-experimental';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { Pokemon } from 'src/app/services/schemas';
 import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
@@ -12,13 +12,13 @@ import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
         <h2>Pokémons List</h2>
         <input type="text" placeholder="Filter by name" [value]="searchText()" (input)="searchText.set($any($event.target).value)" />
         <div class="pokemon-list">
-            @if (query.isPending()) {
+            @if (pokemonQuery.isPending()) {
             <p>Loading in list component...</p>
-            } @else if (query.isError()) {
-            <span>Error: {{ query.error().message }}</span>
+            } @else if (pokemonQuery.isError()) {
+            <span>Error: {{ pokemonQuery.error().message }}</span>
             } @else { @for (pokemon of filteredItems(); track pokemon.id) {
             <app-pokemon-card [pokemon]="pokemon" (click)="viewDetails(pokemon.id.toString())" />
-            } } @if (!this.searchText() && this.query.hasNextPage()) {
+            } } @if (!this.searchText() && this.pokemonQuery.hasNextPage()) {
             <div id="loading" #anchor>...loading more items...</div>
             }
         </div>
@@ -47,29 +47,11 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         }
     }
 
-    query = injectInfiniteQuery(() => ({
-        queryKey: ['pokemons'],
-        queryFn: async ({ pageParam }) => {
-            const pageData = await this.pokemonService.getPokemons(20, pageParam);
-            const detailedResults = await Promise.all(
-                pageData.results.map(async pokemon => {
-                    const detailedData = await fetch(pokemon.url).then(res => res.json()); // replace it with the query
-                    return detailedData;
-                })
-            );
-            return { ...pageData, results: detailedResults };
-        },
-        initialPageParam: 0,
-        getNextPageParam: lastPage => {
-            if (!lastPage.next) return undefined;
-            const searchParams = new URL(lastPage.next).searchParams;
-            return Number(searchParams.get('offset'));
-        },
-    }));
+    pokemonQuery = this.pokemonService.getPokemons();
 
     filteredItems = computed(() => {
         const text = this.searchText().toLowerCase();
-        const currentResults = this.query?.data()?.pages.flatMap(page => page.results) || [];
+        const currentResults = this.pokemonQuery?.data()?.pages.flatMap(page => page.results) || [];
         return currentResults.filter(pokemon => pokemon.name.toLowerCase().includes(text));
     });
 
@@ -80,8 +62,8 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         this.observer = new IntersectionObserver(
             entries => {
                 if (entries.some(e => e.isIntersecting)) {
-                    if (this.query.hasNextPage() && !this.query.isFetchingNextPage()) {
-                        this.query.fetchNextPage();
+                    if (this.pokemonQuery.hasNextPage() && !this.pokemonQuery.isFetchingNextPage()) {
+                        this.pokemonQuery.fetchNextPage();
                     }
                 }
             },
@@ -116,8 +98,8 @@ export class PokemonListComponent implements OnInit, OnDestroy {
     onScroll(event: Event) {
         const target = event.target as HTMLElement;
         if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
-            if (this.query.hasNextPage() && !this.query.isFetchingNextPage()) {
-                this.query.fetchNextPage();
+            if (this.pokemonQuery.hasNextPage() && !this.pokemonQuery.isFetchingNextPage()) {
+                this.pokemonQuery.fetchNextPage();
             }
         }
     }
