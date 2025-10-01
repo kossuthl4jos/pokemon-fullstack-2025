@@ -1,6 +1,7 @@
 import { Component, computed, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { QueryClient } from '@tanstack/angular-query-experimental';
+import { throwError } from 'rxjs';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { Pokemon } from 'src/app/services/schemas';
 import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
@@ -119,8 +120,9 @@ export class PokemonListComponent implements OnInit, OnDestroy {
 
     toTheTop() {
         if (document.documentElement.scrollTop) {
-            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            document.documentElement.scrollTop = 0;
+        } else {
+            throwError(() => new Error('Not supported'));
         }
-        document.body.scrollTop = 0; // For Safari
     }
 }

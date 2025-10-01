@@ -27,3 +27,29 @@
 .pokemon-details {
     font-size: 0.9rem;
 }
+
+.pokemon-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 1rem;
+}
+
+.wishlist-btn,
+.catch-btn {
+    font-size: 1.8rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: transform 0.2s;
+}
+
+.wishlist-btn:hover,
+.catch-btn:hover {
+    transform: scale(1.2);
+}
+
+.control-icon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
