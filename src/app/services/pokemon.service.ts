@@ -24,7 +24,7 @@ export class PokemonService {
                 );
                 const detailedResults = await Promise.all(
                     pageData.results.map(async pokemon => {
-                        const detailedData = await fetch(pokemon.url).then(res => res.json()); // replace it with the query
+                        const detailedData = await lastValueFrom(this.http.get<Pokemon>(pokemon.url).pipe(map(response => Pokemon.parse(response))));
                         return detailedData;
                     })
                 );
