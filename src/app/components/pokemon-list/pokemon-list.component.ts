@@ -11,14 +11,19 @@ import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
     standalone: true,
     template: `
         <h2>Pokémons List</h2>
-        <input type="text" placeholder="Filter by name" [value]="searchText()" (input)="searchText.set($any($event.target).value)" />
+        <input
+            type="text"
+            placeholder="Filter by name"
+            [value]="searchText()"
+            (input)="searchText.set($any($event.target).value)"
+        />
         <div class="pokemon-list">
             @if (pokemonQuery.isPending()) {
             <p>Loading in list component...</p>
             } @else if (pokemonQuery.isError()) {
             <span>Error: {{ pokemonQuery.error().message }}</span>
             } @else { @for (pokemon of filteredItems(); track pokemon.id) {
-            <app-pokemon-card [pokemon]="pokemon" (click)="viewDetails(pokemon.id.toString())" />
+            <app-pokemon-card [pokemon]="pokemon" (click)="viewDetails(pokemon.name)" />
             } } @if (!this.searchText() && this.pokemonQuery.hasNextPage()) {
             <div id="loading" #anchor>...loading more items...</div>
             }
@@ -105,8 +110,8 @@ export class PokemonListComponent implements OnInit, OnDestroy {
         }
     }
 
-    viewDetails(pokemonId: string) {
-        this.router.navigate(['/pokemon', pokemonId]);
+    viewDetails(pokemonName: string) {
+        this.router.navigate(['/pokemon', pokemonName]);
     }
 
     scrollFunction(button: HTMLElement | null) {

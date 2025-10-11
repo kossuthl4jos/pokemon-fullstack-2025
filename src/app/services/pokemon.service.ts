@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { injectInfiniteQuery, injectQuery } from '@tanstack/angular-query-experimental';
+import { injectInfiniteQuery, injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { lastValueFrom, map } from 'rxjs';
 import { Pokemon, PokemonsResponse } from './schemas';
 
@@ -10,6 +10,7 @@ import { Pokemon, PokemonsResponse } from './schemas';
 export class PokemonService {
     private http = inject(HttpClient);
     private baseUrl = 'https://pokeapi.co/api/v2';
+    private queryClient = inject(QueryClient);
 
     getPokemons = () =>
         injectInfiniteQuery(() => ({
@@ -24,7 +25,13 @@ export class PokemonService {
                 );
                 const detailedResults = await Promise.all(
                     pageData.results.map(async pokemon => {
-                        const detailedData = await lastValueFrom(this.http.get<Pokemon>(pokemon.url).pipe(map(response => Pokemon.parse(response))));
+                        const detailedData = await lastValueFrom(
+                            this.http.get<Pokemon>(pokemon.url).pipe(map(response => Pokemon.parse(response)))
+                        );
+                        if (detailedData) {
+                            console.log('Caching detailed data for', detailedData.name);
+                            this.queryClient.setQueryData(['pokemon', detailedData.name], detailedData);
+                        }
                         return detailedData;
                     })
                 );
@@ -38,10 +45,14 @@ export class PokemonService {
             },
         }));
 
-    getPokemonById = (pokemonId: string) =>
+    getPokemonByName = (pokemonName: string) =>
         injectQuery(() => ({
-            queryKey: ['pokemon', pokemonId],
+            queryKey: ['pokemon', pokemonName],
             queryFn: () =>
-                lastValueFrom(this.http.get<Pokemon>(`${this.baseUrl}/pokemon/${pokemonId}`).pipe(map(response => Pokemon.parse(response)))),
+                lastValueFrom(
+                    this.http
+                        .get<Pokemon>(`${this.baseUrl}/pokemon/${pokemonName}`)
+                        .pipe(map(response => Pokemon.parse(response)))
+                ),
         }));
 }
