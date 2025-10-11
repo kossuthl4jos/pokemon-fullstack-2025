@@ -1,13 +1,13 @@
 {
     "tabWidth": 4,
+    "singleQuote": true,
+    "printWidth": 120,
     "useTabs": false,
     "htmlWhitespaceSensitivity": "ignore",
-    "singleQuote": true,
     "semi": true,
     "bracketSpacing": true,
     "arrowParens": "avoid",
     "trailingComma": "es5",
-    "printWidth": 150,
     "overrides": [
         {
             "files": "*.json",
