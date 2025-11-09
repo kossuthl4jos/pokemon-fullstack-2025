@@ -8,3 +8,5 @@ The app is a simple Pokédex app that allows you to search for Pokémons, add th
 The app also has a contact page that allows you to send a message to the app's author. The app is built with a clean architecture and while this structure would make it tedious and difficult to deploy and scale the apps separately it's ideal for local development, exploration and learning.
 
 Detailed steps to run / configure apps is in their respective README.md files.
+
+test
