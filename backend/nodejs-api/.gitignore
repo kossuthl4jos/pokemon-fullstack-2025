@@ -1,0 +1,5 @@
+node_modules/
+.env
+dist/
+pokodex-snapshot.json
+pokodex-filedb.json
